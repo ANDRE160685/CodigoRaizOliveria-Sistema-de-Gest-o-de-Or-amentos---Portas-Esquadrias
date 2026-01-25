@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Vendas - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="bg-light">
+
+    <nav class="navbar navbar-dark bg-dark mb-4 d-print-none">
+        <div class="container-fluid">
+            <span class="navbar-brand">Sistema de Portas & Orçamentos</span>
+            <div>
+                <a href="precos.html" class="btn btn-outline-info btn-sm me-2">⚙️ Configurar Preços</a>
+                <button onclick="logout()" class="btn btn-outline-light btn-sm">Sair</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mb-5 d-print-none">
+        <form id="vendaForm">
+            <input type="hidden" id="idVenda" value="">
+
+            <div class="card shadow-sm mb-4 border-0">
+                <div class="card-header bg-secondary text-white fw-bold">1. Dados do Cliente</div>
+                <div class="card-body bg-white border">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Nome Completo</label>
+                            <input type="text" id="cliente" class="form-control" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-bold">Telefone</label>
+                            <input type="tel" id="telefone" class="form-control" placeholder="(00) 00000-0000">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-bold">WhatsApp</label>
+                            <div class="input-group">
+                                <input type="tel" id="whatsapp" class="form-control" required>
+                                <button class="btn btn-outline-primary" type="button"
+                                    onclick="copiarParaWhatsapp()">🔗</button>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label fw-bold">CEP</label>
+                            <input type="text" id="cep" class="form-control">
+                        </div>
+                        <div class="col-md-5 mb-3">
+                            <label class="form-label fw-bold">Rua</label>
+                            <input type="text" id="rua" class="form-control" required>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label fw-bold">Nº</label>
+                            <input type="text" id="numero" class="form-control" required>
+                        </div>
+                        <div class="col-md-5 mb-3">
+                            <label class="form-label fw-bold">Cidade/UF</label>
+                            <input type="text" id="cidade" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4 border-0">
+                <div class="card-header bg-primary text-white fw-bold">2. Itens do Orçamento</div>
+                <div class="card-body bg-white border">
+                    <div class="row g-2 mb-3 bg-light p-3 rounded border">
+                        <div class="col-md-2">
+                            <label class="small fw-bold">Ambiente de Instalação</label>
+                            <input type="text" id="local" class="form-control form-control-sm">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="small fw-bold">Tipo</label>
+                            <select id="tipo" class="form-select form-select-sm"
+                                onchange="atualizarLinhas(); gerenciarCamposPorta();">
+                                <option value="">Selecione...</option>
+                                <option value="Porta">Porta</option>
+                                <option value="Esquadria">Esquadria</option>
+
+                            </select>
+                        </div>
+                        <div class="col-md-2" id="container-modelo">
+                            <label class="small fw-bold">Modelo da Porta</label>
+                            <select id="modelo" class="form-select form-select-sm">
+                                <option value="Nulo">Selecione...</option>
+                                <option value="Lisa">Lisa</option>
+                                <option value="Com Cava">Com Cava</option>
+                                <option value="Com Friso">Com Friso</option>
+                                <option value="Ripada">Ripada</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="small fw-bold">Linha</label>
+                            <select id="linha" class="form-select form-select-sm"></select>
+                        </div>
+
+                        <div class="row g-2 mb-3 bg-light p-3 rounded border">
+                            <div class="col-md-2">
+                                <label class="small fw-bold">Tipo Painel</label>
+                                <select id="painel" class="form-select form-select-sm">
+                                    <option value="Nulo">Nulo</option>
+                                    <option value="1 Face">1 Face</option>
+                                    <option value="2 Faces">2 Faces</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <label class="small fw-bold">P. Larg(m)</label>
+                                <input type="number" id="painel_largura" class="form-control form-control-sm"
+                                    step="0.01" placeholder="0.00">
+                            </div>
+                            <div class="col-md-1">
+                                <label class="small fw-bold">P. Alt(m)</label>
+                                <input type="number" id="painel_altura" class="form-control form-control-sm" step="0.01"
+                                    placeholder="0.00">
+                            </div>
+
+                        </div>
+                        <div class="col-md-2">
+                            <label class="small fw-bold">Cor</label>
+                            <select id="cor" class="form-select form-select-sm">
+                                <option value="nulo">Nulo</option>
+                                <option value="solida">Sólida</option>
+                                <option value="metalica">Metálica</option>
+                                <option value="amaderado">Amadeirado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1">
+                            <label class="small fw-bold">Larg(m)</label>
+                            <input type="number" id="largura" class="form-control form-control-sm" step="0.01">
+                        </div>
+                        <div class="col-md-1">
+                            <label class="small fw-bold">Alt(m)</label>
+                            <input type="number" id="altura" class="form-control form-control-sm" step="0.01">
+                        </div>
+                        <div class="col-md-1">
+                            <label class="small fw-bold">Qtd</label>
+                            <input type="number" id="quantidade" class="form-control form-control-sm" value="1">
+                        </div>
+                        <div class="col-md-12 mt-2">
+                            <textarea id="observacao" class="form-control form-control-sm" rows="1"
+                                placeholder="Observações do Item"></textarea>
+                        </div>
+                        <div class="col-md-12 mt-2 text-end">
+                            <button type="button" onclick="adicionarItemALista()" class="btn btn-primary btn-sm px-4">+
+                                Adicionar Item</button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th>Ambiente</th>
+                                    <th>Especificação</th>
+                                    <th>Medidas</th>
+                                    <th>Qtd</th>
+                                    <th>Subtotal</th>
+                                    <th class="text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="listaItensTemporarios"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="row mt-4 p-3 bg-light rounded border">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-primary">Forma de Pagamento</label>
+                            <select id="forma_pagamento" class="form-select form-select-lg">
+                                <option value="Dinheiro / Pix">Dinheiro / Pix</option>
+                                <option value="Cartão de Crédito">Cartão de Crédito</option>
+                                <option value="Cartão de Débito">Cartão de Débito</option>
+                                <option value="Boleto Bancário">Boleto Bancário</option>
+                                <option value="Entrada + Parcelamento">Entrada + Parcelamento</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <label class="form-label fw-bold text-primary">Valor Total Acumulado</label>
+                            <input type="text" id="valor_total_venda"
+                                class="form-control form-control-lg total-highlight" value="R$ 0,00" readonly>
+                        </div>
+                    </div>
+
+                    <div class="text-end mt-4">
+                        <button type="button" id="btnCancelar" class="btn btn-outline-secondary d-none"
+                            onclick="cancelarEdicao()">Cancelar Edição</button>
+                        <button type="submit" id="btnSalvar" class="btn btn-success btn-lg px-5 fw-bold">Finalizar
+                            Venda</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <span class="fw-bold">3. Banco de Dados - Vendas Realizadas</span>
+                <input type="text" id="inputBusca" class="form-control form-control-sm w-25"
+                    placeholder="🔍 Buscar cliente..." onkeyup="listarVendas()">
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Localização</th>
+                            <th>Itens</th>
+                            <th>Total</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaVendas"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="relatorioModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-body" id="conteudoRelatorio"></div>
+                <div class="modal-footer d-print-none">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary" onclick="window.print()">🖨️ Imprimir / PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
