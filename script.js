@@ -114,37 +114,55 @@ function gerenciarCamposPorta() {
 }
 function gerenciarCamposExtras() {
     const tipo = document.getElementById('tipo').value;
-    const containerPainel = document.getElementById('container-painel');
-    const containerAcessorios = document.getElementById('container-acessorios');
+    
+    // Containers Principais
+    const containers = {
+        'Esquadria': document.getElementById('container-esquadria-itens'),
+        'Painel': document.getElementById('container-painel'),
+        'Porta': document.getElementById('container-acessorios')
+    };
+
+    // 1. Exibição Principal (Tipo)
+    Object.keys(containers).forEach(key => {
+        if (containers[key]) containers[key].style.display = (tipo === key) ? 'block' : 'none';
+    });
+
+    // 2. Lógica de Sub-itens de Esquadria
+    const subItens = {
+        'item_janela_correr': document.getElementById('container-detalhes-janela'),
+        'item_porta_giro': document.getElementById('container-detalhes-porta-giro'),
+        'item_porta_correr': document.getElementById('container-detalhes-porta-correr'),
+        'item_maximar': document.getElementById('container-detalhes-maximar'),
+        'item_painel_fixo': document.getElementById('container-detalhes-painel-fixo') // Novo
+    };
+
+    Object.keys(subItens).forEach(id => {
+        const checkbox = document.getElementById(id);
+        const container = subItens[id];
+        if (container) {
+            container.style.display = (tipo === 'Esquadria' && checkbox && checkbox.checked) ? 'block' : 'none';
+        }
+    });
+
+    // 3. Modelo e Acessórios de Madeira
     const containerModelo = document.getElementById('container-modelo');
     const modeloSelect = document.getElementById('modelo');
-    const containerEspessura = document.getElementById('container-espessura');
-
-    // 1. Exibição do bloco de Medidas de Painel
-    containerPainel.style.display = (tipo === 'Painel') ? 'block' : 'none';
-
-    // 2. Exibição do bloco de Acessórios (Apenas para Portas)
-    if (containerAcessorios) {
-        containerAcessorios.style.display = (tipo === 'Porta') ? 'block' : 'none';
-    }
-
-    // 3. Exibição do Modelo (Porta e Painel sim / Esquadria não)
-    if (tipo === 'Porta' || tipo === 'Painel') {
-        containerModelo.style.display = 'block';
-        modeloSelect.disabled = false;
-        modeloSelect.classList.add('border-primary');
-    } else {
-        containerModelo.style.display = 'none';
-        modeloSelect.disabled = true;
-        modeloSelect.value = "Nulo";
-        modeloSelect.classList.remove('border-primary');
-    }
-
-    // 4. Reset de Espessura
-    if (tipo !== 'Porta' && containerEspessura) {
-        containerEspessura.style.display = 'none';
+    if (containerModelo) {
+        const mostrarModelo = (tipo === 'Porta' || tipo === 'Painel');
+        containerModelo.style.display = mostrarModelo ? 'block' : 'none';
+        modeloSelect.disabled = !mostrarModelo;
     }
 }
+
+// IMPORTANTE: Adicione este ouvinte no seu DOMContentLoaded ou script principal
+// Para que ao clicar no checkbox a tela reaja imediatamente
+
+
+document.addEventListener('change', function(e) {
+    if (e.target && e.target.classList.contains('check-esquadria')) {
+        gerenciarCamposExtras();
+    }
+});
 
 // 3. Função Principal: Adicionar Item à Lista
 function adicionarItemALista() {
@@ -260,20 +278,41 @@ function atualizarTabelaTemporaria() {
 }
 
 function limparCamposAposAdicionar() {
-    // Campos principais
-    const idsParaLimpar = ['largura', 'altura', 'local', 'observacao', 'painel_largura', 'painel_altura', 'obs_acessorios'];
+    // 1. Limpeza de campos de texto e números (Todos)
+    const idsParaLimpar = [
+        'largura', 'altura', 'local', 'observacao', 'painel_largura', 'painel_altura', 'obs_acessorios',
+        'vidro_largura', 'vidro_altura', 'obs_janela', 
+        'pgiro_vidro_largura', 'pgiro_vidro_altura', 'obs_pgiro',
+        'pcorrer_esq_vidro_largura', 'pcorrer_esq_vidro_altura', 'obs_pcorrer_esq',
+        'maximar_vidro_largura', 'maximar_vidro_altura', 'obs_maximar',
+        'pfixo_vidro_largura', 'pfixo_vidro_altura', 'obs_pfixo' // Painel Fixo
+    ];
     idsParaLimpar.forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = ""; });
+
+    // 2. Reseta Selects
+    const selectsPadrao = {
+        'quantidade': '1', 'modelo': 'Nulo',
+        'janela_vidro_opc': 'Sem Vidro', 'janela_vidro_cor': 'Nulo',
+        'pgiro_preenchimento': 'Sem Vidro', 'pgiro_vidro_cor': 'Nulo',
+        'pcorrer_esq_vidro_opc': 'Sem Vidro', 'pcorrer_esq_vidro_cor': 'Nulo',
+        'maximar_vidro_opc': 'Sem Vidro', 'maximar_vidro_cor': 'Nulo',
+        'pfixo_vidro_opc': 'Sem Vidro', 'pfixo_vidro_cor': 'Nulo' // Painel Fixo
+    };
+    Object.keys(selectsPadrao).forEach(id => {
+        if(document.getElementById(id)) document.getElementById(id).value = selectsPadrao[id];
+    });
+
+    // 3. Checkboxes e Esconde containers
+    document.querySelectorAll('.check-esquadria').forEach(cb => cb.checked = false);
     
-    document.getElementById('quantidade').value = "1";
-    document.getElementById('modelo').value = "Nulo";
-
-    // Campos de acessórios
-    const acessIds = ['veda_qtd', 'veda_val', 'veda_tam', 'pivo_qtd', 'pivo_val', 'pivo_tam', 
-                      'fech_qtd', 'fech_val', 'fech_mod', 'pux_qtd', 'pux_val', 'pux_tam'];
-    acessIds.forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = ""; });
-
-    // Esconde containers específicos
-    if (document.getElementById('container-espessura')) document.getElementById('container-espessura').style.display = 'none';
+    const containersParaEsconder = [
+        'container-detalhes-janela', 'container-detalhes-porta-giro', 
+        'container-detalhes-porta-correr', 'container-detalhes-maximar',
+        'container-detalhes-painel-fixo', 'container-espessura'
+    ];
+    containersParaEsconder.forEach(id => {
+        if(document.getElementById(id)) document.getElementById(id).style.display = 'none';
+    });
 }
 
 function removerItem(index) {

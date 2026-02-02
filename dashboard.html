@@ -84,6 +84,305 @@
                                 <option value="Painel">Painel</option>
                             </select>
                         </div>
+                        <div id="container-esquadria-itens" class="col-md-12 mt-3" style="display: none;">
+                            <div class="card border-primary bg-light">
+                                <div class="card-header bg-primary text-white small py-1">Itens de Esquadria</div>
+                                <div class="card-body p-3">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input check-esquadria" type="checkbox"
+                                                    value="Janela de Correr" id="item_janela_correr">
+                                                <label class="form-check-label small" for="item_janela_correr">Janela de
+                                                    Correr</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input check-esquadria" type="checkbox"
+                                                    value="Porta de Giro" id="item_porta_giro">
+                                                <label class="form-check-label small" for="item_porta_giro">Porta de
+                                                    Giro</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input check-esquadria" type="checkbox"
+                                                    value="Porta de Correr" id="item_porta_correr">
+                                                <label class="form-check-label small" for="item_porta_correr">Porta de
+                                                    Correr</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input check-esquadria" type="checkbox"
+                                                    value="Maxim-ar" id="item_maximar">
+                                                <label class="form-check-label small"
+                                                    for="item_maximar">Maxim-ar</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input check-esquadria" type="checkbox"
+                                                    value="Painel Fixo" id="item_painel_fixo">
+                                                <label class="form-check-label small" for="item_painel_fixo">Painel
+                                                    Fixo</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input check-esquadria" type="checkbox"
+                                                    value="Painel Fixo com Maxim-ar" id="item_painel_maximar">
+                                                <label class="form-check-label small" for="item_painel_maximar">Painel
+                                                    Fixo com Maxim-ar</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input check-esquadria" type="checkbox"
+                                                    value="Guarda Corpo" id="item_guarda_corpo">
+                                                <label class="form-check-label small" for="item_guarda_corpo">Guarda
+                                                    Corpo</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input check-esquadria" type="checkbox"
+                                                    value="Box de Banheiro" id="item_box">
+                                                <label class="form-check-label small" for="item_box">Box de
+                                                    Banheiro</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="container-detalhes-janela" class="col-md-12 mt-2" style="display: none;">
+                            <div class="card border-warning bg-light">
+                                <div class="card-header bg-warning text-dark small py-1 fw-bold">Configuração: Janela de
+                                    Correr</div>
+                                <div class="card-body p-3">
+                                    <div class="row g-2">
+                                        <div class="col-md-3">
+                                            <label class="small fw-bold">Itens (Folhas)</label>
+                                            <select id="janela_folhas" class="form-select form-select-sm">
+                                                <option value="">Selecione...</option>
+                                                <option value="2 Folhas">2 Folhas</option>
+                                                <option value="3 Folhas">3 Folhas</option>
+                                                <option value="4 Folhas">4 Folhas</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <label class="small fw-bold">Vidro</label>
+                                            <select id="janela_vidro_opc" class="form-select form-select-sm">
+                                                <option value="Sem Vidro">Sem Vidro</option>
+                                                <option value="Com Vidro">Com Vidro</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <label class="small fw-bold">Cor do Vidro</label>
+                                            <select id="janela_vidro_cor" class="form-select form-select-sm">
+                                                <option value="Nulo">Nulo</option>
+                                                <option value="Preto">Preto</option>
+                                                <option value="Bronze">Bronze</option>
+                                                <option value="Branco">Branco</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-5">
+                                            <label class="small fw-bold">Tamanho do Vidro (L x A)</label>
+                                            <div class="input-group input-group-sm">
+                                                <input type="number" id="vidro_largura" class="form-control"
+                                                    placeholder="Larg.">
+                                                <span class="input-group-text">x</span>
+                                                <input type="number" id="vidro_altura" class="form-control"
+                                                    placeholder="Alt.">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12 mt-2">
+                                            <textarea id="obs_janela" class="form-control form-control-sm" rows="1"
+                                                placeholder="Observações específicas para esta janela..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="container-detalhes-porta-giro" class="col-md-12 mt-2" style="display: none;">
+    <div class="card border-success bg-light">
+        <div class="card-header bg-success text-white small py-1 fw-bold">Configuração: Porta de Giro</div>
+        <div class="card-body p-3">
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <label class="small fw-bold">Itens (Folhas)</label>
+                    <select id="pgiro_folhas" class="form-select form-select-sm">
+                        <option value="">Selecione...</option>
+                        <option value="1 Folha">1 Folha</option>
+                        <option value="2 Folhas">2 Folhas</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="small fw-bold">Tipo de Preenchimento</label>
+                    <select id="pgiro_preenchimento" class="form-select form-select-sm">
+                        <option value="Sem Vidro">Sem Vidro</option>
+                        <option value="Com Vidro">Com Vidro</option>
+                        <option value="Veneziana">Veneziana</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="small fw-bold">Cor do Vidro</label>
+                    <select id="pgiro_vidro_cor" class="form-select form-select-sm">
+                        <option value="Nulo">Nulo</option>
+                        <option value="Preto">Preto</option>
+                        <option value="Bronze">Bronze</option>
+                        <option value="Branco">Branco</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="small fw-bold">Tamanho do Vidro (L x A)</label>
+                    <div class="input-group input-group-sm">
+                        <input type="number" id="pgiro_vidro_largura" class="form-control" placeholder="L">
+                        <span class="input-group-text">x</span>
+                        <input type="number" id="pgiro_vidro_altura" class="form-control" placeholder="A">
+                    </div>
+                </div>
+
+                <div class="col-md-12 mt-2">
+                    <textarea id="obs_pgiro" class="form-control form-control-sm" rows="1" placeholder="Observações para a Porta de Giro..."></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="container-detalhes-porta-correr" class="col-md-12 mt-2" style="display: none;">
+    <div class="card border-info bg-light">
+        <div class="card-header bg-info text-white small py-1 fw-bold">Configuração: Porta de Correr (Esquadria)</div>
+        <div class="card-body p-3">
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <label class="small fw-bold">Itens (Folhas)</label>
+                    <select id="pcorrer_esq_folhas" class="form-select form-select-sm">
+                        <option value="">Selecione...</option>
+                        <option value="2 Folhas">2 Folhas</option>
+                        <option value="3 Folhas">3 Folhas</option>
+                        <option value="4 Folhas">4 Folhas</option>
+                        <option value="6 Folhas">6 Folhas</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="small fw-bold">Vidro</label>
+                    <select id="pcorrer_esq_vidro_opc" class="form-select form-select-sm">
+                        <option value="Sem Vidro">Sem Vidro</option>
+                        <option value="Com Vidro">Com Vidro</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="small fw-bold">Cor do Vidro</label>
+                    <select id="pcorrer_esq_vidro_cor" class="form-select form-select-sm">
+                        <option value="Nulo">Nulo</option>
+                        <option value="Preto">Preto</option>
+                        <option value="Bronze">Bronze</option>
+                        <option value="Branco">Branco</option>
+                    </select>
+                </div>
+
+                <div class="col-md-5">
+                    <label class="small fw-bold">Tamanho do Vidro (L x A)</label>
+                    <div class="input-group input-group-sm">
+                        <input type="number" id="pcorrer_esq_vidro_largura" class="form-control" placeholder="Larg.">
+                        <span class="input-group-text">x</span>
+                        <input type="number" id="pcorrer_esq_vidro_altura" class="form-control" placeholder="Alt.">
+                    </div>
+                </div>
+
+                <div class="col-md-12 mt-2">
+                    <textarea id="obs_pcorrer_esq" class="form-control form-control-sm" rows="1" placeholder="Observações específicas para Porta de Correr..."></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="container-detalhes-maximar" class="col-md-12 mt-2" style="display: none;">
+    <div class="card border-secondary bg-light">
+        <div class="card-header bg-secondary text-white small py-1 fw-bold">Configuração: Maxim-ar</div>
+        <div class="card-body p-3">
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <label class="small fw-bold">Itens (Vidro)</label>
+                    <select id="maximar_vidro_opc" class="form-select form-select-sm">
+                        <option value="Sem Vidro">Sem Vidro</option>
+                        <option value="Com Vidro">Com Vidro</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="small fw-bold">Cor do Vidro</label>
+                    <select id="maximar_vidro_cor" class="form-select form-select-sm">
+                        <option value="Nulo">Nulo</option>
+                        <option value="Preto">Preto</option>
+                        <option value="Bronze">Bronze</option>
+                        <option value="Branco">Branco</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="small fw-bold">Tamanho do Vidro (L x A)</label>
+                    <div class="input-group input-group-sm">
+                        <input type="number" id="maximar_vidro_largura" class="form-control" placeholder="L">
+                        <span class="input-group-text">x</span>
+                        <input type="number" id="maximar_vidro_altura" class="form-control" placeholder="A">
+                    </div>
+                </div>
+
+                <div class="col-md-12 mt-2">
+                    <textarea id="obs_maximar" class="form-control form-control-sm" rows="1" placeholder="Observações específicas para Maxim-ar..."></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="container-detalhes-painel-fixo" class="col-md-12 mt-2" style="display: none;">
+    <div class="card border-dark bg-light">
+        <div class="card-header bg-dark text-white small py-1 fw-bold">Configuração: Painel Fixo</div>
+        <div class="card-body p-3">
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <label class="small fw-bold">Itens (Vidro)</label>
+                    <select id="pfixo_vidro_opc" class="form-select form-select-sm">
+                        <option value="Sem Vidro">Sem Vidro</option>
+                        <option value="Com Vidro">Com Vidro</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="small fw-bold">Cor do Vidro</label>
+                    <select id="pfixo_vidro_cor" class="form-select form-select-sm">
+                        <option value="Nulo">Nulo</option>
+                        <option value="Preto">Preto</option>
+                        <option value="Bronze">Bronze</option>
+                        <option value="Branco">Branco</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="small fw-bold">Tamanho do Vidro (L x A)</label>
+                    <div class="input-group input-group-sm">
+                        <input type="number" id="pfixo_vidro_largura" class="form-control" placeholder="L">
+                        <span class="input-group-text">x</span>
+                        <input type="number" id="pfixo_vidro_altura" class="form-control" placeholder="A">
+                    </div>
+                </div>
+
+                <div class="col-md-12 mt-2">
+                    <textarea id="obs_pfixo" class="form-control form-control-sm" rows="1" placeholder="Observações específicas para Painel Fixo..."></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
                         <div class="col-md-6" id="container-painel" style="display: none;">
                             <div class="row g-2 bg-warning bg-opacity-10 p-2 rounded border border-warning">
