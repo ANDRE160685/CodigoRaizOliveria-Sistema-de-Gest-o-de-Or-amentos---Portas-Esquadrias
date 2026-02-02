@@ -1,147 +1,243 @@
+// =========================================================
+// SISTEMA DE ORÇAMENTOS - CODRAIZOLIVEIRA
+// Desenvolvedor: André Luis | script.js
+// =========================================================
+
 // --- SEGURANÇA E INICIALIZAÇÃO ---
 window.addEventListener('pageshow', function (event) {
-    // 1. Verificação de Segurança (o que você já tinha)
+    // 1. Verificação de Segurança
     if (window.location.pathname.includes('dashboard.html')) {
         if (localStorage.getItem('logado') !== 'true') {
             window.location.replace("index.html");
-            return; // Para a execução aqui se não estiver logado
+            return;
         }
     }
 
-    // 2. Carregamento Automático de Dados (a parte nova)
-    
-    // Se estiver na página de Preços
+    // 2. Carregamento Automático de Dados
     if (document.getElementById('formPrecos')) {
         carregarConfiguracoesPrecos();
     }
-    
-    // Se estiver no Dashboard
+
     if (document.getElementById('tabelaVendas')) {
         listarVendas();
     }
 });
 
-function logout() { localStorage.removeItem('logado'); window.location.replace("index.html"); }
+function logout() {
+    localStorage.removeItem('logado');
+    window.location.replace("index.html");
+}
 
 const loginForm = document.getElementById('loginForm');
 if (loginForm) {
     loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
         if (document.getElementById('email_login').value === "Teste" && document.getElementById('password').value === "1234") {
-            localStorage.setItem('logado', 'true'); window.location.href = "dashboard.html";
-        } else { alert("Acesso negado!"); }
+            localStorage.setItem('logado', 'true');
+            window.location.href = "dashboard.html";
+        } else {
+            alert("Acesso negado!");
+        }
     });
 }
 
-// --- LÓGICA DE ITENS ---
+// --- LÓGICA DE ITENS DO ORÇAMENTO ---
 let itensDoOrcamento = [];
 
+// 1. Atualiza as linhas conforme o tipo (Porta ou Esquadria)
 function atualizarLinhas(tipoForced = "", linhaForced = "") {
     const tipo = tipoForced || document.getElementById('tipo').value;
     const linhaSelect = document.getElementById('linha');
+    const containerEspessura = document.getElementById('container-espessura');
+
     linhaSelect.innerHTML = '<option value="">Selecione...</option>';
-    const opcoes = { 'Porta': ['Interna', 'Externa', 'De Correr'], 'Esquadria': ['Gold', 'Suprema'] };
+    
+    const opcoes = { 
+        'Porta': ['Interna', 'Externa', 'De Correr'], 
+        'Esquadria': ['Gold', 'Suprema'],
+        'Painel': ['Ripado', 'Liso', 'Frisado'] // Opções para o novo tipo Painel
+    };
 
     if (tipo && opcoes[tipo]) {
         opcoes[tipo].forEach(item => {
             const opt = document.createElement('option');
-            opt.value = item; opt.textContent = item;
+            opt.value = item; 
+            opt.textContent = item;
             linhaSelect.appendChild(opt);
         });
         if (linhaForced) linhaSelect.value = linhaForced;
     }
+
+    // Reset de segurança: Esconde campos específicos ao mudar o tipo
+    if (containerEspessura) containerEspessura.style.display = 'none';
 }
+
+// 2. Monitora especificamente a Linha "Externa" para mostrar milímetros
+document.addEventListener('change', function (e) {
+    if (e.target && e.target.id === 'linha') {
+        const linhaVal = e.target.value;
+        const container = document.getElementById('container-espessura');
+        const selectEsp = document.getElementById('espessura_porta');
+        const precos = JSON.parse(localStorage.getItem('tabela_precos')) || {};
+
+        if (linhaVal === 'Externa') {
+            container.style.display = 'block';
+            selectEsp.innerHTML = '<option value="">Selecione mm...</option>';
+
+            const opcoesMM = [precos.p_ext_1_mm, precos.p_ext_2_mm, precos.p_ext_3_mm];
+            opcoesMM.forEach(mm => {
+                if (mm) {
+                    const opt = document.createElement('option');
+                    opt.value = mm;
+                    opt.textContent = mm + ' mm';
+                    selectEsp.appendChild(opt);
+                }
+            });
+        } else {
+            if (container) container.style.display = 'none';
+        }
+    }
+});
+
 function gerenciarCamposPorta() {
     const tipo = document.getElementById('tipo').value;
     const modeloSelect = document.getElementById('modelo');
 
     if (tipo === 'Porta') {
         modeloSelect.disabled = false;
-        modeloSelect.classList.add('border-primary'); // Destaque visual
+        modeloSelect.classList.add('border-primary');
     } else {
         modeloSelect.disabled = true;
         modeloSelect.value = "Nulo";
         modeloSelect.classList.remove('border-primary');
     }
 }
+function gerenciarCamposExtras() {
+    const tipo = document.getElementById('tipo').value;
+    const containerPainel = document.getElementById('container-painel');
+    const containerAcessorios = document.getElementById('container-acessorios');
+    const containerModelo = document.getElementById('container-modelo');
+    const modeloSelect = document.getElementById('modelo');
+    const containerEspessura = document.getElementById('container-espessura');
 
+    // 1. Exibição do bloco de Medidas de Painel
+    containerPainel.style.display = (tipo === 'Painel') ? 'block' : 'none';
+
+    // 2. Exibição do bloco de Acessórios (Apenas para Portas)
+    if (containerAcessorios) {
+        containerAcessorios.style.display = (tipo === 'Porta') ? 'block' : 'none';
+    }
+
+    // 3. Exibição do Modelo (Porta e Painel sim / Esquadria não)
+    if (tipo === 'Porta' || tipo === 'Painel') {
+        containerModelo.style.display = 'block';
+        modeloSelect.disabled = false;
+        modeloSelect.classList.add('border-primary');
+    } else {
+        containerModelo.style.display = 'none';
+        modeloSelect.disabled = true;
+        modeloSelect.value = "Nulo";
+        modeloSelect.classList.remove('border-primary');
+    }
+
+    // 4. Reset de Espessura
+    if (tipo !== 'Porta' && containerEspessura) {
+        containerEspessura.style.display = 'none';
+    }
+}
+
+// 3. Função Principal: Adicionar Item à Lista
 function adicionarItemALista() {
-    // 1. Captura de dados da interface
     const local = document.getElementById('local').value || "Geral";
     const tipo = document.getElementById('tipo').value;
     const linha = document.getElementById('linha').value;
     const modelo = document.getElementById('modelo').value;
     const cor = document.getElementById('cor').value;
-    const largura = parseFloat(document.getElementById('largura').value) || 0;
-    const altura = parseFloat(document.getElementById('altura').value) || 0;
-    const obs = document.getElementById('observacao').value;
+    const larguraGeral = parseFloat(document.getElementById('largura').value) || 0;
+    const alturaGeral = parseFloat(document.getElementById('altura').value) || 0;
+    const quantidade = parseInt(document.getElementById('quantidade').value) || 1;
+    const obsGeral = document.getElementById('observacao').value;
 
-    // 2. Validação básica
-    if (!tipo || !linha || largura <= 0 || altura <= 0) {
-        alert("Preencha o Tipo, Linha e as Medidas (Largura/Altura).");
+    if (!tipo || !linha) {
+        alert("Selecione o Tipo e a Linha.");
         return;
     }
 
-    // 3. BUSCA OS PREÇOS SALVOS MANUALMENTE (do precos.html)
-    // Se não houver nada salvo, ele assume 0 para evitar erros
     const precos = JSON.parse(localStorage.getItem('tabela_precos')) || {};
+    let vU = 0; 
+    let especificacaoExtra = "";
+    let larguraCalculo = larguraGeral;
+    let alturaCalculo = alturaGeral;
 
-    // 4. Lógica de Cálculo
-    const m2Item = largura * altura;
-    let vU = 0; // Valor Unitário do m²
-
+    // --- 1. VALOR BASE ---
     if (tipo === 'Porta') {
-        // Seleciona o preço base de acordo com a Linha escolhida
-        if (linha === 'Interna') {
-            vU = precos.p_interna_m2 || 0;
-        } else if (linha === 'Externa') {
-            vU = precos.p_externa_m2 || 0;
-        } else if (linha === 'De Correr') {
-            vU = precos.p_correr_m2 || 0;
+        if (larguraGeral <= 0 || alturaGeral <= 0) { alert("Informe as medidas da porta."); return; }
+        if (linha === 'Interna') vU = parseFloat(precos.p_interna_m2) || 0;
+        else if (linha === 'De Correr') vU = parseFloat(precos.p_correr_m2) || 0;
+        else if (linha === 'Externa') {
+            const mmEscolhido = document.getElementById('espessura_porta').value;
+            if (!mmEscolhido) { alert("Selecione a espessura."); return; }
+            if (mmEscolhido == precos.p_ext_1_mm) vU = parseFloat(precos.p_ext_1_valor);
+            else if (mmEscolhido == precos.p_ext_2_mm) vU = parseFloat(precos.p_ext_2_valor);
+            else if (mmEscolhido == precos.p_ext_3_mm) vU = parseFloat(precos.p_ext_3_valor);
+            especificacaoExtra = ` (${mmEscolhido}mm)`;
         }
-
-        const corSelecionada = document.getElementById('cor').value;
-        if (tipo === 'Porta' && linha === 'Externa') {
-            if (corSelecionada === 'metalica' || corSelecionada === 'metalico') {
-                vU += (precos.add_cor_metalico || 0);
-            } else if (corSelecionada === 'amadeirado' || corSelecionada === 'amaderado') {
-                vU += (precos.add_cor_amadeirado || 0);
-            }
-        }
-
-        // Soma os adicionais de modelo (Ripada ou Cava)
-        if (modelo === 'Ripada') vU += (precos.add_ripada || 0);
-        if (modelo === 'Com Cava') vU += (precos.add_cava || 0);
-
-    } else if (tipo === 'Esquadria') {
-        // Para esquadrias, busca o valor da Linha Gold ou Suprema
-        vU = (linha === 'Gold') ? (precos.e_gold || 0) : (precos.e_suprema || 0);
+    } 
+    else if (tipo === 'Painel') {
+        const faces = document.getElementById('painel_faces').value;
+        larguraCalculo = parseFloat(document.getElementById('painel_largura').value) || 0;
+        alturaCalculo = parseFloat(document.getElementById('painel_altura').value) || 0;
+        vU = (faces === "1 Face") ? (parseFloat(precos.preco_painel_1face) || 0) : (parseFloat(precos.preco_painel_2faces) || 0);
+        especificacaoExtra = ` (Painel ${faces})`;
+    }
+    else if (tipo === 'Esquadria') {
+        vU = (linha === 'Gold') ? (parseFloat(precos.e_gold) || 0) : (parseFloat(precos.e_suprema) || 0);
     }
 
-    // 5. Cálculo Final
-    const subtotalFinal = m2Item * vU;
+    // --- 2. ADICIONAIS (Modelo e Cor) ---
+    if (tipo !== 'Esquadria') {
+        if (modelo === 'Ripada') vU += (parseFloat(precos.add_ripada) || 0);
+        if (modelo === 'Com Cava') vU += (parseFloat(precos.add_cava) || 0);
+    }
+    if (cor.includes('metalica') || cor === 'metalico') vU += (parseFloat(precos.add_cor_metalico) || 0);
+    if (cor.includes('amadeirado') || cor === 'amaderado') vU += (parseFloat(precos.add_cor_amadeirado) || 0);
 
-    // 6. Salvar no array de itens (sem coluna de quantidade)
-    itensDoOrcamento.push({ 
-        local, 
-        tipo, 
-        linha, 
-        modelo: modelo !== 'Nulo' ? modelo : "", 
-        cor: cor !== 'nulo' ? cor : "",
-        medidas: `${largura.toFixed(2)}m x ${altura.toFixed(2)}m (${m2Item.toFixed(2)}m²)`, 
-        subtotal: subtotalFinal 
+    // --- 3. ACESSÓRIOS (Portas) ---
+    let totalAcessorios = 0;
+    let resumoAcessorios = "";
+    if (tipo === 'Porta') {
+        const acessoriosIds = ['veda', 'pivo', 'fech', 'pux'];
+        acessoriosIds.forEach(id => {
+            const q = parseInt(document.getElementById(`${id}_qtd`).value) || 0;
+            const v = parseFloat(document.getElementById(`${id}_val`).value) || 0;
+            const t = document.getElementById(id === 'fech' ? 'fech_mod' : `${id}_tam`).value || "";
+            if (q > 0) {
+                totalAcessorios += (q * v);
+                resumoAcessorios += `[${id.toUpperCase()}: ${q}un - ${t}] `;
+            }
+        });
+        const obsAcc = document.getElementById('obs_acessorios').value;
+        if (obsAcc) resumoAcessorios += ` | Obs: ${obsAcc}`;
+    }
+
+    // --- 4. CÁLCULO FINAL ---
+    const m2Item = larguraCalculo * alturaCalculo;
+    const subtotalFinal = ((m2Item * vU) * quantidade) + totalAcessorios;
+
+    itensDoOrcamento.push({
+        local, tipo, linha: linha + especificacaoExtra,
+        modelo: modelo !== 'Nulo' ? modelo : "",
+        cor: (cor !== 'nulo' && cor !== "") ? cor : "",
+        largura: larguraCalculo.toFixed(2), altura: alturaCalculo.toFixed(2),
+        m2: m2Item.toFixed(2), qtd: quantidade,
+        obs: obsGeral + (resumoAcessorios ? " | ACESSÓRIOS: " + resumoAcessorios : ""),
+        subtotal: subtotalFinal
     });
 
-    // 7. Atualizar interface e limpar campos
     atualizarTabelaTemporaria();
-    
-    document.getElementById('largura').value = "";
-    document.getElementById('altura').value = "";
-    document.getElementById('local').value = "";
-    document.getElementById('observacao').value = "";
+    limparCamposAposAdicionar();
 }
 
-// 2. Ajuste na tabela para não mostrar Quantidade (Qtd)
 function atualizarTabelaTemporaria() {
     const tbody = document.getElementById('listaItensTemporarios');
     tbody.innerHTML = "";
@@ -152,29 +248,8 @@ function atualizarTabelaTemporaria() {
         tbody.innerHTML += `
             <tr>
                 <td>${item.local}</td>
-                <td>${item.tipo} ${item.linha} ${item.modelo} ${item.cor}</td>
-                <td>${item.medidas}</td>
-                <td>R$ ${item.subtotal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-                <td class="text-center">
-                    <button type="button" class="btn btn-danger btn-sm" onclick="removerItem(${index})">X</button>
-                </td>
-            </tr>`;
-    });
-
-    document.getElementById('valor_total_venda').value = totalGeral.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
-}
-function atualizarTabelaTemporaria() {
-    const tbody = document.getElementById('listaItensTemporarios');
-    tbody.innerHTML = "";
-    let totalGeral = 0;
-
-    itensDoOrcamento.forEach((item, index) => {
-        totalGeral += item.subtotal;
-        tbody.innerHTML += `
-            <tr>
-                <td>${item.local}</td>
-                <td>${item.tipo} ${item.linha} ${item.modelo !== 'Nulo' ? '(' + item.modelo + ')' : ''} ${item.painel !== 'Nulo' ? '[' + item.painel + ']' : ''}</td>
-                <td>${item.largura}x${item.altura}</td>
+                <td>${item.tipo} ${item.linha} ${item.modelo ? '(' + item.modelo + ')' : ''} ${item.cor}</td>
+                <td>${item.largura}x${item.altura} (${item.m2}m²)</td>
                 <td>${item.qtd}</td>
                 <td>R$ ${item.subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
                 <td class="text-center"><button type="button" class="btn btn-danger btn-sm" onclick="removerItem(${index})">X</button></td>
@@ -184,12 +259,29 @@ function atualizarTabelaTemporaria() {
     document.getElementById('valor_total_venda').value = totalGeral.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
+function limparCamposAposAdicionar() {
+    // Campos principais
+    const idsParaLimpar = ['largura', 'altura', 'local', 'observacao', 'painel_largura', 'painel_altura', 'obs_acessorios'];
+    idsParaLimpar.forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = ""; });
+    
+    document.getElementById('quantidade').value = "1";
+    document.getElementById('modelo').value = "Nulo";
+
+    // Campos de acessórios
+    const acessIds = ['veda_qtd', 'veda_val', 'veda_tam', 'pivo_qtd', 'pivo_val', 'pivo_tam', 
+                      'fech_qtd', 'fech_val', 'fech_mod', 'pux_qtd', 'pux_val', 'pux_tam'];
+    acessIds.forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = ""; });
+
+    // Esconde containers específicos
+    if (document.getElementById('container-espessura')) document.getElementById('container-espessura').style.display = 'none';
+}
+
 function removerItem(index) {
     itensDoOrcamento.splice(index, 1);
     atualizarTabelaTemporaria();
 }
 
-// --- CRUD ---
+// --- CRUD VENDAS ---
 const vendaForm = document.getElementById('vendaForm');
 if (vendaForm) {
     vendaForm.addEventListener('submit', (e) => {
@@ -211,22 +303,18 @@ if (vendaForm) {
         };
 
         let vendas = JSON.parse(localStorage.getItem('banco_vendas')) || [];
-
         if (idVenda) {
-            // Se tem ID, substitui a venda existente (Edição)
-            const index = vendas.findIndex(v => v.id == idVenda);
-            vendas[index] = venda;
+            const idx = vendas.findIndex(v => v.id == idVenda);
+            vendas[idx] = venda;
         } else {
-            // Se não tem ID, adiciona nova (Criação)
             vendas.push(venda);
         }
 
         localStorage.setItem('banco_vendas', JSON.stringify(vendas));
         cancelarEdicao();
         listarVendas();
-        alert(idVenda ? "Orçamento atualizado!" : "Venda salva com sucesso!");
+        alert("Salvo com sucesso!");
     });
-    listarVendas();
 }
 
 function listarVendas() {
@@ -252,7 +340,6 @@ function listarVendas() {
     });
 }
 
-// FUNÇÃO DE EDIÇÃO
 function prepararEdicao(id) {
     let vendas = JSON.parse(localStorage.getItem('banco_vendas')) || [];
     const v = vendas.find(x => x.id == id);
@@ -265,11 +352,8 @@ function prepararEdicao(id) {
         document.getElementById('numero').value = v.numero;
         document.getElementById('cidade').value = v.cidade;
         document.getElementById('forma_pagamento').value = v.pagamento;
-        document.getElementById('painel').value = v.painel || "Nulo";
-
         itensDoOrcamento = [...v.itens];
         atualizarTabelaTemporaria();
-
         document.getElementById('btnSalvar').innerText = "Atualizar Orçamento";
         document.getElementById('btnCancelar').classList.remove('d-none');
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -285,7 +369,7 @@ function excluirVenda(id) {
 }
 
 function cancelarEdicao() {
-    vendaForm.reset();
+    if (vendaForm) vendaForm.reset();
     itensDoOrcamento = [];
     document.getElementById('idVenda').value = "";
     document.getElementById('btnSalvar').innerText = "Finalizar Venda";
@@ -301,12 +385,11 @@ function visualizarRelatorio(id) {
     let itensHtml = v.itens.map(i => `
         <tr>
             <td>${i.local}</td>
-            <td>${i.tipo} ${i.linha} ${i.modelo !== 'Nulo' ? '- Mod: ' + i.modelo : ''} ${i.painel !== 'Nulo' ? '- Painel: ' + i.painel : ''}</td>
+            <td>${i.tipo} ${i.linha} ${i.modelo ? '- ' + i.modelo : ''}</td>
             <td>${i.largura}x${i.altura}</td>
             <td>${i.qtd}</td>
             <td>R$ ${i.subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-        </tr>
-    `).join('');
+        </tr>`).join('');
 
     document.getElementById('conteudoRelatorio').innerHTML = `
         <div class="p-4">
@@ -327,31 +410,23 @@ function copiarParaWhatsapp() {
     if (tel) document.getElementById('whatsapp').value = "55" + tel;
 }
 
-// --- FUNÇÕES ESPECÍFICAS PARA A PÁGINA PRECOS.HTML ---
-
-// Carrega os valores nos inputs quando a página precos.html abre
+// --- FUNÇÕES DE PREÇOS (CONFIGURAÇÃO) ---
 function carregarConfiguracoesPrecos() {
     const salvos = JSON.parse(localStorage.getItem('tabela_precos'));
     if (salvos) {
         Object.keys(salvos).forEach(id => {
             const input = document.getElementById(id);
-            if (input) {
-                input.value = salvos[id];
-            }
+            if (input) input.value = salvos[id];
         });
     }
 }
 
-// Salva os valores digitados manualmente (incluindo m2 e milímetros)
 function salvarPrecos() {
     const novosPrecos = {};
-    // Pega todos os campos de número do formulário de preços
     const campos = document.querySelectorAll('#formPrecos input[type="number"]');
-    
     campos.forEach(campo => {
         novosPrecos[campo.id] = parseFloat(campo.value) || 0;
     });
-
     localStorage.setItem('tabela_precos', JSON.stringify(novosPrecos));
-    alert("Configurações de preços e milímetros salvas com sucesso!");
+    alert("Preços salvos com sucesso!");
 }

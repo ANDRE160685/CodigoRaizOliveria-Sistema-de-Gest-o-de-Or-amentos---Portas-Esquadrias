@@ -77,15 +77,37 @@
                         <div class="col-md-2">
                             <label class="small fw-bold">Tipo</label>
                             <select id="tipo" class="form-select form-select-sm"
-                                onchange="atualizarLinhas(); gerenciarCamposPorta();">
+                                onchange="atualizarLinhas(); gerenciarCamposExtras();">
                                 <option value="">Selecione...</option>
                                 <option value="Porta">Porta</option>
                                 <option value="Esquadria">Esquadria</option>
-
+                                <option value="Painel">Painel</option>
                             </select>
                         </div>
+
+                        <div class="col-md-6" id="container-painel" style="display: none;">
+                            <div class="row g-2 bg-warning bg-opacity-10 p-2 rounded border border-warning">
+                                <div class="col-md-4">
+                                    <label class="small fw-bold">Faces do Painel</label>
+                                    <select id="painel_faces" class="form-select form-select-sm">
+                                        <option value="1 Face">1 Face</option>
+                                        <option value="2 Faces">2 Faces</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="small fw-bold">P. Largura (m)</label>
+                                    <input type="number" id="painel_largura" class="form-control form-control-sm"
+                                        step="0.01" placeholder="0.00">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="small fw-bold">P. Altura (m)</label>
+                                    <input type="number" id="painel_altura" class="form-control form-control-sm"
+                                        step="0.01" placeholder="0.00">
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-md-2" id="container-modelo">
-                            <label class="small fw-bold">Modelo da Porta</label>
+                            <label class="small fw-bold">Modelo</label>
                             <select id="modelo" class="form-select form-select-sm">
                                 <option value="Nulo">Selecione...</option>
                                 <option value="Lisa">Lisa</option>
@@ -98,28 +120,67 @@
                             <label class="small fw-bold">Linha</label>
                             <select id="linha" class="form-select form-select-sm"></select>
                         </div>
-
-                        <div class="row g-2 mb-3 bg-light p-3 rounded border">
-                            <div class="col-md-2">
-                                <label class="small fw-bold">Tipo Painel</label>
-                                <select id="painel" class="form-select form-select-sm">
-                                    <option value="Nulo">Nulo</option>
-                                    <option value="1 Face">1 Face</option>
-                                    <option value="2 Faces">2 Faces</option>
-                                </select>
-                            </div>
-                            <div class="col-md-1">
-                                <label class="small fw-bold">P. Larg(m)</label>
-                                <input type="number" id="painel_largura" class="form-control form-control-sm"
-                                    step="0.01" placeholder="0.00">
-                            </div>
-                            <div class="col-md-1">
-                                <label class="small fw-bold">P. Alt(m)</label>
-                                <input type="number" id="painel_altura" class="form-control form-control-sm" step="0.01"
-                                    placeholder="0.00">
-                            </div>
-
+                        <!--XXXXXXXXXXXXXgo  código novo adicionado XXXXXXXXXXXXXX-->
+                        <div class="col-md-2" id="container-espessura" style="display: none;">
+                            <label class="small fw-bold text-primary">Espessura (mm)</label>
+                            <select id="espessura_porta" class="form-select form-select-sm border-primary">
+                            </select>
                         </div>
+
+                        <div id="container-acessorios" class="col-md-12 mt-3" style="display: none;">
+                            <div class="card border-info bg-light">
+                                <div class="card-header bg-info text-white small py-1">Acessórios da Porta</div>
+                                <div class="card-body p-2">
+                                    <div class="row g-2">
+                                        <div class="col-md-3">
+                                            <label class="small fw-bold">Veda Porta (Qtd/Tam/Val)</label>
+                                            <div class="input-group input-group-sm">
+                                                <input type="number" id="veda_qtd" class="form-control"
+                                                    placeholder="Qtd">
+                                                <input type="text" id="veda_tam" class="form-control" placeholder="Tam">
+                                                <input type="number" id="veda_val" class="form-control"
+                                                    placeholder="R$">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="small fw-bold">Pivô (Qtd/Tam/Val)</label>
+                                            <div class="input-group input-group-sm">
+                                                <input type="number" id="pivo_qtd" class="form-control"
+                                                    placeholder="Qtd">
+                                                <input type="text" id="pivo_tam" class="form-control" placeholder="Tam">
+                                                <input type="number" id="pivo_val" class="form-control"
+                                                    placeholder="R$">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="small fw-bold">Fechadura (Qtd/Mod/Val)</label>
+                                            <div class="input-group input-group-sm">
+                                                <input type="number" id="fech_qtd" class="form-control"
+                                                    placeholder="Qtd">
+                                                <input type="text" id="fech_mod" class="form-control" placeholder="Mod">
+                                                <input type="number" id="fech_val" class="form-control"
+                                                    placeholder="R$">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="small fw-bold">Puxador Inox (Qtd/Tam/Val)</label>
+                                            <div class="input-group input-group-sm">
+                                                <input type="number" id="pux_qtd" class="form-control"
+                                                    placeholder="Qtd">
+                                                <input type="text" id="pux_tam" class="form-control" placeholder="Tam">
+                                                <input type="number" id="pux_val" class="form-control" placeholder="R$">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 mt-2">
+                                            <input type="text" id="obs_acessorios" class="form-control form-control-sm"
+                                                placeholder="Observações específicas dos acessórios (ex: marca, acabamento...)">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
                         <div class="col-md-2">
                             <label class="small fw-bold">Cor</label>
                             <select id="cor" class="form-select form-select-sm">
@@ -189,7 +250,7 @@
                         <button type="button" id="btnCancelar" class="btn btn-outline-secondary d-none"
                             onclick="cancelarEdicao()">Cancelar Edição</button>
                         <button type="submit" id="btnSalvar" class="btn btn-success btn-lg px-5 fw-bold">Finalizar
-                            Venda</button>
+                            Orçamento</button>
                     </div>
                 </div>
             </div>
