@@ -35,7 +35,7 @@ function carregarConfiguracoesPrecos() {
 function atualizarLinhas() {
     const tipo = document.getElementById('tipo').value;
     const linhaSelect = document.getElementById('linha');
-    
+
     // Limpa as opções atuais
     linhaSelect.innerHTML = '<option value="">Selecione...</option>';
 
@@ -62,17 +62,17 @@ function gerenciarCamposPorta() {
     const tipo = document.getElementById('tipo').value;
     const containerMilimetro = document.getElementById('containerMilimetro');
     const selectMilimetro = document.getElementById('milimetroPorta');
-    
+
     // Recupera os dados salvos no localStorage
     const precos = JSON.parse(localStorage.getItem('tabela_precos')) || {};
 
     if (tipo === "Porta") {
         // Mostra o campo de milímetros
         containerMilimetro.style.display = "block";
-        
+
         // Limpa e preenche com os milímetros capturados da tela de preços
         selectMilimetro.innerHTML = '<option value="">Escolha o mm...</option>';
-        
+
         // IDs que você usa no formulário de preços para os milímetros
         const mms = [
             { label: 'Interna', valor: precos.p_interna_esp },

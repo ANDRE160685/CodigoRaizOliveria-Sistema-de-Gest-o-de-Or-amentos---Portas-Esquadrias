@@ -51,9 +51,9 @@ function atualizarLinhas(tipoForced = "", linhaForced = "") {
     const containerEspessura = document.getElementById('container-espessura');
 
     linhaSelect.innerHTML = '<option value="">Selecione...</option>';
-    
-    const opcoes = { 
-        'Porta': ['Interna', 'Externa', 'De Correr'], 
+
+    const opcoes = {
+        'Porta': ['Interna', 'Externa', 'De Correr'],
         'Esquadria': ['Gold', 'Suprema'],
         'Painel': ['Ripado', 'Liso', 'Frisado'] // Opções para o novo tipo Painel
     };
@@ -61,7 +61,7 @@ function atualizarLinhas(tipoForced = "", linhaForced = "") {
     if (tipo && opcoes[tipo]) {
         opcoes[tipo].forEach(item => {
             const opt = document.createElement('option');
-            opt.value = item; 
+            opt.value = item;
             opt.textContent = item;
             linhaSelect.appendChild(opt);
         });
@@ -114,7 +114,7 @@ function gerenciarCamposPorta() {
 }
 function gerenciarCamposExtras() {
     const tipo = document.getElementById('tipo').value;
-    
+
     // Containers Principais
     const containers = {
         'Esquadria': document.getElementById('container-esquadria-itens'),
@@ -133,7 +133,10 @@ function gerenciarCamposExtras() {
         'item_porta_giro': document.getElementById('container-detalhes-porta-giro'),
         'item_porta_correr': document.getElementById('container-detalhes-porta-correr'),
         'item_maximar': document.getElementById('container-detalhes-maximar'),
-        'item_painel_fixo': document.getElementById('container-detalhes-painel-fixo') // Novo
+        'item_painel_fixo': document.getElementById('container-detalhes-painel-fixo'),
+        'item_painel_maximar': document.getElementById('container-detalhes-painel-maximar'),
+        'item_guarda_corpo': document.getElementById('container-detalhes-guarda-corpo'), // NOVO
+        'item_box': document.getElementById('container-detalhes-box') // NOVO
     };
 
     Object.keys(subItens).forEach(id => {
@@ -158,7 +161,7 @@ function gerenciarCamposExtras() {
 // Para que ao clicar no checkbox a tela reaja imediatamente
 
 
-document.addEventListener('change', function(e) {
+document.addEventListener('change', function (e) {
     if (e.target && e.target.classList.contains('check-esquadria')) {
         gerenciarCamposExtras();
     }
@@ -182,7 +185,7 @@ function adicionarItemALista() {
     }
 
     const precos = JSON.parse(localStorage.getItem('tabela_precos')) || {};
-    let vU = 0; 
+    let vU = 0;
     let especificacaoExtra = "";
     let larguraCalculo = larguraGeral;
     let alturaCalculo = alturaGeral;
@@ -200,7 +203,7 @@ function adicionarItemALista() {
             else if (mmEscolhido == precos.p_ext_3_mm) vU = parseFloat(precos.p_ext_3_valor);
             especificacaoExtra = ` (${mmEscolhido}mm)`;
         }
-    } 
+    }
     else if (tipo === 'Painel') {
         const faces = document.getElementById('painel_faces').value;
         larguraCalculo = parseFloat(document.getElementById('painel_largura').value) || 0;
@@ -278,41 +281,99 @@ function atualizarTabelaTemporaria() {
 }
 
 function limparCamposAposAdicionar() {
-    // 1. Limpeza de campos de texto e números (Todos)
+    // 1. Lista de IDs para limpar campos de texto, números e medidas
     const idsParaLimpar = [
-        'largura', 'altura', 'local', 'observacao', 'painel_largura', 'painel_altura', 'obs_acessorios',
-        'vidro_largura', 'vidro_altura', 'obs_janela', 
+        // Campos Gerais
+        'largura', 'altura', 'local', 'observacao', 'quantidade',
+
+        // Painel e Acessórios
+        'painel_largura', 'painel_altura', 'obs_acessorios',
+
+        // Detalhes de Esquadrias (Janela, Porta Giro, Porta Correr)
+        'vidro_largura', 'vidro_altura', 'obs_janela',
         'pgiro_vidro_largura', 'pgiro_vidro_altura', 'obs_pgiro',
         'pcorrer_esq_vidro_largura', 'pcorrer_esq_vidro_altura', 'obs_pcorrer_esq',
-        'maximar_vidro_largura', 'maximar_vidro_altura', 'obs_maximar',
-        'pfixo_vidro_largura', 'pfixo_vidro_altura', 'obs_pfixo' // Painel Fixo
-    ];
-    idsParaLimpar.forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = ""; });
 
-    // 2. Reseta Selects
+        // Maxim-ar e Painéis
+        'maximar_vidro_largura', 'maximar_vidro_altura', 'obs_maximar',
+        'pfixo_vidro_largura', 'pfixo_vidro_altura', 'obs_pfixo',
+        'p_maximar_vidro_largura', 'p_maximar_vidro_altura', 'obs_p_maximar',
+
+        // NOVO: Guarda-Corpo
+        'gcorpo_vidro_largura', 'gcorpo_vidro_altura', 'obs_gcorpo',
+
+        // NOVO: Box de Banheiro
+        'box_largura', 'box_altura', 'obs_box'
+    ];
+
+    // Executa a limpeza dos inputs
+    idsParaLimpar.forEach(id => {
+        const elemento = document.getElementById(id);
+        if (elemento) {
+            // Se for quantidade, volta para 1, senão limpa o valor
+            elemento.value = (id === 'quantidade') ? "1" : "";
+        }
+    });
+
+    // 2. Reseta todos os Selects para os valores padrão (primeira opção)
     const selectsPadrao = {
-        'quantidade': '1', 'modelo': 'Nulo',
+        'modelo': 'Nulo',
+        'cor': 'nulo',
+        'tipo': '',
+        'linha': '',
+        'espessura_porta': '',
+
+        // Selects de Vidros/Itens
         'janela_vidro_opc': 'Sem Vidro', 'janela_vidro_cor': 'Nulo',
         'pgiro_preenchimento': 'Sem Vidro', 'pgiro_vidro_cor': 'Nulo',
         'pcorrer_esq_vidro_opc': 'Sem Vidro', 'pcorrer_esq_vidro_cor': 'Nulo',
         'maximar_vidro_opc': 'Sem Vidro', 'maximar_vidro_cor': 'Nulo',
-        'pfixo_vidro_opc': 'Sem Vidro', 'pfixo_vidro_cor': 'Nulo' // Painel Fixo
+        'pfixo_vidro_opc': 'Sem Vidro', 'pfixo_vidro_cor': 'Nulo',
+        'p_maximar_vidro_opc': 'Sem Vidro', 'p_maximar_vidro_cor': 'Nulo',
+
+        // NOVO: Selects Guarda-Corpo
+        'gcorpo_vidro_opc': 'Laminado', 'gcorpo_vidro_cor': 'Incolor',
+
+        // NOVO: Selects Box
+        'box_modelo': 'F1 (1 Fixo / 1 Correr)', 'box_vidro_cor': 'Incolor'
     };
+
     Object.keys(selectsPadrao).forEach(id => {
-        if(document.getElementById(id)) document.getElementById(id).value = selectsPadrao[id];
+        const elemento = document.getElementById(id);
+        if (elemento) elemento.value = selectsPadrao[id];
     });
 
-    // 3. Checkboxes e Esconde containers
-    document.querySelectorAll('.check-esquadria').forEach(cb => cb.checked = false);
-    
-    const containersParaEsconder = [
-        'container-detalhes-janela', 'container-detalhes-porta-giro', 
-        'container-detalhes-porta-correr', 'container-detalhes-maximar',
-        'container-detalhes-painel-fixo', 'container-espessura'
-    ];
-    containersParaEsconder.forEach(id => {
-        if(document.getElementById(id)) document.getElementById(id).style.display = 'none';
+    // 3. Desmarca todos os Checkboxes da classe 'check-esquadria'
+    document.querySelectorAll('.check-esquadria').forEach(cb => {
+        cb.checked = false;
     });
+
+    // 4. Esconde todos os containers de detalhes para resetar a interface
+    const containersParaEsconder = [
+        'container-detalhes-janela',
+        'container-detalhes-porta-giro',
+        'container-detalhes-porta-correr',
+        'container-detalhes-maximar',
+        'container-detalhes-painel-fixo',
+        'container-detalhes-painel-maximar',
+        'container-detalhes-guarda-corpo', // NOVO
+        'container-detalhes-box',          // NOVO
+        'container-espessura',
+        'container-acessorios',
+        'container-esquadria-itens',
+        'container-painel'
+    ];
+
+    containersParaEsconder.forEach(id => {
+        const elemento = document.getElementById(id);
+        if (elemento) elemento.style.display = 'none';
+    });
+
+    // 5. Retorna o foco para o primeiro campo (Local) para facilitar a próxima digitação
+    const campoLocal = document.getElementById('local');
+    if (campoLocal) campoLocal.focus();
+
+    console.log("Campos resetados com sucesso para novo item.");
 }
 
 function removerItem(index) {
